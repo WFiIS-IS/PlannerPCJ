@@ -1,5 +1,7 @@
 package lol.wfis.planner.config;
 
+import java.io.Serializable;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AlgorithmConfig {
+public class AlgorithmConfig implements Serializable {
     // The maximum number of generations to run the algorithm for
     private int maxGenerations = 100;
     // How many individuals to have in the population
