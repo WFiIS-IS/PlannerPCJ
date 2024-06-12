@@ -3,6 +3,8 @@ package lol.wfis.planner;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.NavigableMap;
@@ -10,6 +12,7 @@ import java.util.Random;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.SerializationUtils;
 import org.pcj.PCJ;
 import org.pcj.StartPoint;
 import org.pcj.Storage;
@@ -118,7 +121,7 @@ public class Main implements StartPoint {
         // repair lost
         var allGenes = mother.stream().flatMap(c -> c.stream()).collect(Collectors.toList());
 
-        var lostGenes = allGenes.stream().filter(g -> child.stream().anyMatch(c -> c.contains(g)))
+        var lostGenes = allGenes.stream().filter(g -> !child.stream().anyMatch(c -> c.contains(g)))
                 .collect(Collectors.toList());
 
         for (var gene : lostGenes) {
@@ -131,6 +134,16 @@ public class Main implements StartPoint {
 
         for (var period : child) {
             period.removeIf(x -> !seen.add(x));
+        }
+
+        {
+
+            int reguiredGeneCount = 36;
+
+            if (child.stream().mapToInt(c -> c.size()).sum() != reguiredGeneCount) {
+                throw new RuntimeException("Child chromosome should have " + reguiredGeneCount + " genes, but has "
+                        + child.stream().mapToInt(c -> c.size()).sum() + " genes");
+            }
         }
 
         return child;
@@ -166,9 +179,7 @@ public class Main implements StartPoint {
         }
     }
 
-    public int calculateFitness(Individual individual, List<Tuple> tuples) {
-        var debug = false;
-
+    public int calculateFitness(Individual individual, List<Tuple> tuples, boolean debug) {
         var individualFitness = 0;
 
         for (var chromosome : individual) {
@@ -262,124 +273,94 @@ public class Main implements StartPoint {
     TestCustomObjectToBeShared test;
 
     @Override
-    public void main() throws FileNotFoundException {
+    public void main() throws IOException {
         var id = PCJ.myId();
         var worldSize = PCJ.threadCount();
 
-        if (id == 0) {
-
-            var conifg = new AlgorithmConfig();
-
-            String tuplesFile = "tuples.csv";
-            var tuples = new CsvToBeanBuilder<Tuple>(new FileReader(tuplesFile))
-                    .withType(Tuple.class)
-                    .build()
-                    .parse();
-
-            var newPopulationSize = AlgorithmUtils.adaptPopulationSizeToWorkerNumber(conifg.getPopulationSize(), id,
-                    worldSize);
-
-            System.out.println("Algorithm configuration: " + conifg);
-
-            var population = createFirstPopulation(conifg, tuples);
-
-            // iterate over max generations
-
-            for (int generation = 0; generation < conifg.getMaxGenerations(); generation++) {
-
-                var populationToBeProcessed = population; // temp
-
-                if (id == 0)
-                    System.out.println("Generation: " + generation);
-
-            }
-
+        if (id != 0) {
+            return;
         }
 
-        PCJ.barrier();
+        var conifg = new AlgorithmConfig();
 
-        // var population = createFirstPopulation(config, null)
+        String tuplesFile = "tuples.csv";
 
-        return;
+        var tuples = new CsvToBeanBuilder<Tuple>(new FileReader(tuplesFile))
+                .withType(Tuple.class)
+                .build()
+                .parse();
 
-        ////////////////////////////////////////////
+        var newPopulationSize = AlgorithmUtils.adaptPopulationSizeToWorkerNumber(conifg.getPopulationSize(), id,
+                worldSize);
+        conifg.setPopulationSize(newPopulationSize);
 
-        // System.out.println("Hello World from PCJ Thread " + PCJ.myId()
-        // + " out of " + PCJ.threadCount());
+        System.out.println("Algorithm configuration: " + conifg);
 
-        // // test = new TestCustomObjectToBeShared();
-        // // test.list = new java.util.ArrayList<>();
+        var population = createFirstPopulation(conifg, tuples);
 
-        // PCJ.barrier();
+        for (int generation = 0; generation < conifg.getMaxGenerations(); generation++) {
 
-        // if (PCJ.myId() == 0) {
-        // System.out.println("Hello World from PCJ Thread " + PCJ.myId()
-        // + " out of " + PCJ.threadCount());
+            Population populationToBeProcessed = (Population) SerializationUtils.clone(population); // temp, while we
+                                                                                                    // don't have
+                                                                                                    // gather_and_synchronize
+            if (id == 0) {
+                System.out.println("Generation: " + generation);
+            }
 
-        // test = new TestCustomObjectToBeShared();
-        // test.list = new java.util.ArrayList<>();
-        // test.list.add(1.1);
-        // test.list.add(2.2);
-        // test.list.add(3.3);
+            var p = population;
 
-        // System.out.println("Test: " + test.list);
-        // }
+            var newPopulation = populationToBeProcessed.stream()
+                    .<Individual>map(individual -> crossover(conifg, p))
+                    .map(individual -> {
+                        mutate(conifg, individual);
+                        return individual;
+                    })
+                    .map(individual -> {
+                        individual.setAdaptation(calculateFitness(individual, tuples, false));
+                        return individual;
+                    })
+                    .collect(Collectors.toList());
 
-        // PCJ.barrier();
+            populationToBeProcessed = new Population(newPopulation);
 
-        // if (PCJ.myId() == 1) {
-        // System.out.println("Hello World from PCJ Thread " + PCJ.myId()
-        // + " out of " + PCJ.threadCount());
+            population = populationToBeProcessed; // temp, while we don't have gather_and_synchronize
 
-        // var a = PCJ.<TestCustomObjectToBeShared>get(0, Shared.test);
+            // population.sort_by(|a, b| b.adaptation.partial_cmp(&a.adaptation).unwrap());
 
-        // System.out.println("Test: " + a.list);
-        // }
+            population.sort((a, b) -> Integer.compare(b.getAdaptation(), a.getAdaptation()));
 
-        // // default example program below
-        // PCJ.barrier();
+            if (id == 0) {
+                System.out.println("Best adaptation: " + population.get(0).getAdaptation());
+            }
 
-        // Random r = new Random();
+            if (population.get(0).getAdaptation() == 0) {
 
-        // long nAll = 1000000;
-        // long n = nAll / PCJ.threadCount();
-        // double Rsq = 1.0;
-        // long circleCount;
-        // // Calculate
-        // circleCount = 0;
-        // double time = System.nanoTime();
+                var bestIndividual = population.get(0);
 
-        // for (long i = 0; i < n; i++) {
-        // double x = 2.0 * r.nextDouble() - 1.0;
-        // double y = 2.0 * r.nextDouble() - 1.0;
-        // if ((x * x + y * y) < Rsq) {
-        // circleCount++;
-        // }
-        // }
+                // create timetable.txt
 
-        // c = circleCount;
-        // PCJ.barrier();
-        // // Communicate results
-        // var cL = new PcjFuture[PCJ.threadCount()];
+                File timetableFile = new File("timetable.txt");
+                var writer = new java.io.FileWriter(timetableFile);
 
-        // long c0 = c;
-        // if (PCJ.myId() == 0) {
-        // for (int p = 1; p < PCJ.threadCount(); p++) {
-        // cL[p] = PCJ.asyncGet(p, Shared.c);
-        // }
-        // for (int p = 1; p < PCJ.threadCount(); p++) {
-        // c0 = c0 + (long) cL[p].get();
-        // }
-        // }
+                for (int i = 0; i < bestIndividual.size(); i++) {
+                    var chromosome = bestIndividual.get(i);
 
-        // PCJ.barrier();
+                    var mappedTuples = chromosome.stream()
+                            .map(gene -> tuples.stream().filter(t -> t.getId() == gene.getId()).findFirst().get());
 
-        // double pi = 4.0 * (double) c0 / (double) nAll;
-        // time = System.nanoTime() - time;
-        // // Print results
-        // if (PCJ.myId() == 0) {
-        // System.out.println(pi + " " + time * 1.0E-9);
-        // }
+                    var tuplesAsString = mappedTuples.map(t -> t.toString()).collect(Collectors.joining("\n - "));
+
+                    // write to timetable.txt
+
+                    writer.write(i + 1 + ":\n - " + tuplesAsString + "\n");
+                }
+
+                writer.close();
+
+                break;
+            }
+        }
+
     }
 
     public static void main(String[] args) throws Exception {
@@ -389,3 +370,82 @@ public class Main implements StartPoint {
                 .start();
     }
 }
+
+////////////////////////////////////////////
+
+// System.out.println("Hello World from PCJ Thread " + PCJ.myId()
+// + " out of " + PCJ.threadCount());
+
+// // test = new TestCustomObjectToBeShared();
+// // test.list = new java.util.ArrayList<>();
+
+// PCJ.barrier();
+
+// if (PCJ.myId() == 0) {
+// System.out.println("Hello World from PCJ Thread " + PCJ.myId()
+// + " out of " + PCJ.threadCount());
+
+// test = new TestCustomObjectToBeShared();
+// test.list = new java.util.ArrayList<>();
+// test.list.add(1.1);
+// test.list.add(2.2);
+// test.list.add(3.3);
+
+// System.out.println("Test: " + test.list);
+// }
+
+// PCJ.barrier();
+
+// if (PCJ.myId() == 1) {
+// System.out.println("Hello World from PCJ Thread " + PCJ.myId()
+// + " out of " + PCJ.threadCount());
+
+// var a = PCJ.<TestCustomObjectToBeShared>get(0, Shared.test);
+
+// System.out.println("Test: " + a.list);
+// }
+
+// // default example program below
+// PCJ.barrier();
+
+// Random r = new Random();
+
+// long nAll = 1000000;
+// long n = nAll / PCJ.threadCount();
+// double Rsq = 1.0;
+// long circleCount;
+// // Calculate
+// circleCount = 0;
+// double time = System.nanoTime();
+
+// for (long i = 0; i < n; i++) {
+// double x = 2.0 * r.nextDouble() - 1.0;
+// double y = 2.0 * r.nextDouble() - 1.0;
+// if ((x * x + y * y) < Rsq) {
+// circleCount++;
+// }
+// }
+
+// c = circleCount;
+// PCJ.barrier();
+// // Communicate results
+// var cL = new PcjFuture[PCJ.threadCount()];
+
+// long c0 = c;
+// if (PCJ.myId() == 0) {
+// for (int p = 1; p < PCJ.threadCount(); p++) {
+// cL[p] = PCJ.asyncGet(p, Shared.c);
+// }
+// for (int p = 1; p < PCJ.threadCount(); p++) {
+// c0 = c0 + (long) cL[p].get();
+// }
+// }
+
+// PCJ.barrier();
+
+// double pi = 4.0 * (double) c0 / (double) nAll;
+// time = System.nanoTime() - time;
+// // Print results
+// if (PCJ.myId() == 0) {
+// System.out.println(pi + " " + time * 1.0E-9);
+// }

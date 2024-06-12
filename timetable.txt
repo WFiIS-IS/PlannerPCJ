@@ -1,0 +1,44 @@
+1:
+ - Tuple(id=19, label=CWL | Analiza i przetwarzanie obrazów, room=D-10 101, teacher=mgr inż. Gołaszewski, G (golaszewski@fis.agh.edu.pl))
+ - Tuple(id=5, label=Wykład | Fizyka współczesna w informatyce, room=D-11 18, teacher=dr Janik-Kokoszka, J (jjk@agh.edu.pl))
+ - Tuple(id=27, label=CWL | Sztuczne sieci neuronowe, room=D-7 326, teacher=mgr inż. Krzywda, M (krzywda@agh.edu.pl))
+ - Tuple(id=3, label=Wykład | Deep learning with CUDA - advanced applications, room=D-7 210, teacher=prof. dr hab inż. Szumlak, T (Tomasz.Szumlak@agh.edu.pl))
+ - Tuple(id=30, label=CWL | Zaawansowane technologie internetowe, room=D-7 327, teacher=dr inż. Gronek, P (gronek@novell.ftj.agh.edu.pl))
+2:
+ - Tuple(id=8, label=Wykład | Uczenie maszynowe, room=D-7 015, teacher=prof. dr hab inż. Szumlak, T (Tomasz.Szumlak@agh.edu.pl))
+ - Tuple(id=24, label=CWL | Sztuczne sieci neuronowe, room=D-7 326, teacher=mgr inż. Krzywda, M (krzywda@agh.edu.pl))
+ - Tuple(id=31, label=CWL | Zaawansowane technologie internetowe, room=D-7 327, teacher=dr inż. Gronek, P (gronek@novell.ftj.agh.edu.pl))
+ - Tuple(id=9, label=CWA | Fizyka współczesna w informatyce, room=D-11 18, teacher=dr Janik-Kokoszka, J (jjk@agh.edu.pl))
+3:
+ - Tuple(id=2, label=Wykład | Automaty komórkowe, room=D-10 225, teacher=dr hab. inż. Malarz, K (malarz@agh.edu.pl))
+ - Tuple(id=14, label=CWL | Wideo i animacja w systemach komputerowych, room=D-10 207, teacher=dr inż. Haberko, J (haberko@novell.ftj.agh.edu.pl))
+ - Tuple(id=15, label=CWL | Zapewnianie jakości w projektach IT (Sabre Academy), room=D-7 327, teacher=Sabre Academy (SA@nieznany.com))
+ - Tuple(id=17, label=CWL | Analiza i przetwarzanie obrazów, room=D-10 101, teacher=mgr inż. Gołaszewski, G (golaszewski@fis.agh.edu.pl))
+ - Tuple(id=20, label=CWL | Systemy równoległe i rozproszone, room=D-10 204, teacher=dr inż. Gronek, P (gronek@novell.ftj.agh.edu.pl))
+ - Tuple(id=10, label=CWA | Fizyka współczesna w informatyce, room=D-11 18, teacher=dr Janik-Kokoszka, J (jjk@agh.edu.pl))
+4:
+ - Tuple(id=6, label=Wykład | Systemy równoległe i rozproszone, room=D-10 D-czarna, teacher=dr inż. Gronek, P (gronek@novell.ftj.agh.edu.pl))
+ - Tuple(id=29, label=CWL | Zaawansowane technologie internetowe, room=D-7 327, teacher=dr inż. Dydejczyk, A (dydejczyk@ftj.agh.edu.pl))
+ - Tuple(id=26, label=CWL | Sztuczne sieci neuronowe, room=D-7 326, teacher=mgr inż. Krzywda, M (krzywda@agh.edu.pl))
+ - Tuple(id=11, label=CWL | Deep learning with CUDA - advanced applications, room=D-10 204, teacher=prof. dr hab inż. Szumlak, T (Tomasz.Szumlak@agh.edu.pl))
+ - Tuple(id=28, label=CWL | Uczenie maszynowe, room=D-10 206, teacher=dr inż. Bibrzycki, Ł (bibrzycki@agh.edu.pl))
+ - Tuple(id=36, label=Ćwiczenia projektowe | Programowanie zespołowe, room=D-10 101, teacher=dr inż. Rachwał, B (brachwal@agh.edu.pl))
+5:
+ - Tuple(id=32, label=CWL | Zaawansowane technologie internetowe, room=D-7 327, teacher=dr inż. Gronek, P (gronek@novell.ftj.agh.edu.pl))
+ - Tuple(id=16, label=CWL | Analiza i przetwarzanie obrazów, room=D-10 101, teacher=mgr inż. Gołaszewski, G (golaszewski@fis.agh.edu.pl))
+6:
+ - Tuple(id=18, label=CWL | Analiza i przetwarzanie obrazów, room=D-10 101, teacher=mgr inż. Gołaszewski, G (golaszewski@fis.agh.edu.pl))
+ - Tuple(id=21, label=CWL | Systemy równoległe i rozproszone, room=D-10 204, teacher=dr inż. Gronek, P (gronek@novell.ftj.agh.edu.pl))
+ - Tuple(id=1, label=Zajęcia seminaryjne | Analiza i przetwarzanie obrazów, room=D-10 108, teacher=dr inż. Łukasik, S (slukasik@ibspan.waw.pl))
+ - Tuple(id=25, label=CWL | Sztuczne sieci neuronowe, room=D-7 326, teacher=mgr inż. Krzywda, M (krzywda@agh.edu.pl))
+ - Tuple(id=4, label=Wykład | Zapewnianie jakości w projektach IT (Sabre Academy), room=D-7 327, teacher=Sabre Academy (SA@nieznany.com))
+7:
+ - Tuple(id=22, label=CWL | Systemy równoległe i rozproszone, room=D-10 204, teacher=dr inż. Gronek, P (gronek@novell.ftj.agh.edu.pl))
+ - Tuple(id=33, label=Ćwiczenia projektowe | Programowanie zespołowe, room=D-7 327, teacher=dr inż. Dydejczyk, A (dydejczyk@ftj.agh.edu.pl))
+8:
+ - Tuple(id=35, label=Ćwiczenia projektowe | Programowanie zespołowe, room=D-10 101, teacher=dr inż. Rachwał, B (brachwal@agh.edu.pl))
+ - Tuple(id=23, label=CWL | Systemy równoległe i rozproszone, room=D-10 204, teacher=dr inż. Gronek, P (gronek@novell.ftj.agh.edu.pl))
+ - Tuple(id=12, label=CWL | Język Go, room=D-7 327, teacher=dr hab. inż. Krawczyk, M (krawczyk@novell.ftj.agh.edu.pl))
+ - Tuple(id=34, label=Ćwiczenia projektowe | Programowanie zespołowe, room=D-7 326, teacher=dr hab. Mindur, B (mindur@agh.edu.pl))
+ - Tuple(id=13, label=CWL | Praktyczne wzorce architektoniczne, room=D-10 206, teacher=dr inż. Rybak, M (mrybak@agh.edu.pl))
+ - Tuple(id=7, label=Wykład | Sztuczne sieci neuronowe, room=D-7 015, teacher=dr hab. inż. Kowalski, P (pakowal@ibspan.waw.pl))
